@@ -1,0 +1,1 @@
+$result:=Set input scope (IS_HIRAGANA)

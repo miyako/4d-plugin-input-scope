@@ -1,0 +1,12 @@
+{
+    "name": "Input Scope",
+    "id": 20000,
+    "commands": [
+        {
+            "theme": "Input Scope",
+            "syntax": "Set input scope(&L):L",
+            "threadSafe": true
+        }
+    ]
+}
+
