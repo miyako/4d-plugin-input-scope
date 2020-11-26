@@ -5,7 +5,12 @@
         {
             "theme": "Input Scope",
             "syntax": "Set input scope(&L):L",
-            "threadSafe": true
+            "threadSafe": false
+        },
+        {
+            "theme": "Input Method",
+            "syntax": "Disable input method:L",
+            "threadSafe": false
         }
     ]
 }
