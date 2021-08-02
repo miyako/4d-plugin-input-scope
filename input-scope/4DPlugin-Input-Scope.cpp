@@ -67,6 +67,11 @@ void PluginMain(PA_long32 selector, PA_PluginParameters params) {
 
 #pragma mark -
 
+/*
+PA_long32 event = PA_GetLongintVariable(PA_ExecuteCommandByID(COMMAND_FORM_EVENT, NULL, 0));
+if (event == EVENT_ON_GETTING_FOCUS) {}
+*/
+
 void Set_input_scope(PA_PluginParameters params) {
     
     PA_long32 res = 0;
@@ -74,12 +79,23 @@ void Set_input_scope(PA_PluginParameters params) {
 #if VERSIONWIN
     
     if(!PA_IsProcessDying()) {
-        
+
         HWND hwnd = GetFocus();
         
         if(hwnd) {
-        
-            res = setInputScope(hwnd, (InputScope)PA_GetLongParameter(params, 1));
+
+			HIMC himc = ImmGetContext(hwnd);
+			if (himc) {
+				ImmNotifyIME(himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);//cancel any ongoing composition
+			}
+			else {
+				ImmAssociateContextEx(hwnd, NULL, IACE_DEFAULT);//enble input method
+			}
+
+			setInputScope(hwnd, IS_DEFAULT);//forget the default input scope for this hwnd
+
+            res = setInputScope(hwnd, (InputScope)PA_GetLongParameter(params, 1));//set new input scope
+
         }
     }
     
@@ -100,21 +116,20 @@ void Disable_input_method(PA_PluginParameters params)
      */
     
     if(!PA_IsProcessDying()) {
-        PA_long32 event = PA_GetLongintVariable(PA_ExecuteCommandByID(COMMAND_FORM_EVENT, NULL, 0));
                     
             HWND hwnd = GetFocus();
             
             if(hwnd) {
 
-				if (event != EVENT_ON_GETTING_FOCUS) {
-					HIMC himc = ImmGetContext(hwnd);
-					if (himc) {
-						ImmNotifyIME(himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
-						ImmReleaseContext(hwnd, himc);
-					}
+				HIMC himc = ImmGetContext(hwnd);
+				if (himc) {
+					ImmNotifyIME(himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);//cancel any ongoing composition
+					ImmReleaseContext(hwnd, himc);
 				}
 
-                res = ImmAssociateContextEx(hwnd, NULL, 0);
+				setInputScope(hwnd, IS_DEFAULT);//forget the default input scope for this hwnd
+
+                res = ImmAssociateContextEx(hwnd, NULL, 0);//disable input method for this hwnd
             }
         }
 #endif

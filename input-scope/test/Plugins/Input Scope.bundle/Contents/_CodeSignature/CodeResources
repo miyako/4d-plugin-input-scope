@@ -8,7 +8,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			1sHPp6iGSWkrtKeZG+0+G9qjDek=
+			W2NISnnjk0QtNHolnOE6HqLDL+o=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -39,11 +39,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			1sHPp6iGSWkrtKeZG+0+G9qjDek=
+			W2NISnnjk0QtNHolnOE6HqLDL+o=
 			</data>
 			<key>hash2</key>
 			<data>
-			Nz8q55Kn7bTUVgLWwLJi6g/nusaImbQXehDNitDMFrA=
+			v//NRmTgp7CH2X3XO9pVYAM/aM2gI15MBwyrmlxPk5I=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -70,26 +70,15 @@
 			2d2hHnGsEL2VOrH8RxwCN0JN46CWUe8pzzzlS6pyMaE=
 			</data>
 		</dict>
-		<key>Windows/Input Scope.4DX</key>
-		<dict>
-			<key>hash</key>
-			<data>
-			oCw6L6bEnT8HMN+oFeBJXG2PY1Y=
-			</data>
-			<key>hash2</key>
-			<data>
-			gszFTIMBhqtfRQvlvxfIDjfYhuyiATC+ZpvR7JCNSO4=
-			</data>
-		</dict>
 		<key>Windows64/Input Scope.4DX</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			O+z7z0i5VfIPepihxAulfmBRW0g=
+			/UIJzVbozqAosv0xuACCYKWL17E=
 			</data>
 			<key>hash2</key>
 			<data>
-			HF5IxMaaf5uOVuSJ/EgBf37kia5MUC/dviV9/sc0iJA=
+			R2zyWdpPbdI2JJg4rm0boZUrkDWkbJVsytB8LyMX/B0=
 			</data>
 		</dict>
 	</dict>
