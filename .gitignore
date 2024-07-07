@@ -1,1 +1,3 @@
 input-scope/build/*
+input-scope/.vs/*
+input-scope/Objs/*
