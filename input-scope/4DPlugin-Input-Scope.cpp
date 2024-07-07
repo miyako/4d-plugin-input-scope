@@ -49,11 +49,13 @@ void PluginMain(PA_long32 selector, PA_PluginParameters params) {
 			// --- Input Scope
             
 			case 1 :
-				Set_input_scope(params);
+                PA_RunInMainProcess((PA_RunInMainProcessProcPtr)Set_input_scope, params);
+//                Set_input_scope(params);
 				break;
                 
             case 2 :
-                Disable_input_method(params);
+                PA_RunInMainProcess((PA_RunInMainProcessProcPtr)Disable_input_method, params);
+//                Disable_input_method(params);
                 break;
 
         }
