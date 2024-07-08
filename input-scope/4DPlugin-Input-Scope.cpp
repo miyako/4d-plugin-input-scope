@@ -86,9 +86,14 @@ void Set_input_scope(PA_PluginParameters params) {
         
         if(hwnd) {
 
-			HIMC himc = ImmGetContext(hwnd);
+            res = setInputScope(hwnd, (InputScope)PA_GetLongParameter(params, 1));//set new input scope
+
+            res = ImmAssociateContextEx(hwnd, NULL, 0);//disable input method for this hwnd
+			
+            HIMC himc = ImmGetContext(hwnd);
 			if (himc) {
 				ImmNotifyIME(himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);//cancel any ongoing composition
+                ImmReleaseContext(hwnd, himc);
 			}
 			else {
 				ImmAssociateContextEx(hwnd, NULL, IACE_DEFAULT);//enble input method
@@ -97,7 +102,6 @@ void Set_input_scope(PA_PluginParameters params) {
 			setInputScope(hwnd, IS_DEFAULT);//forget the default input scope for this hwnd
 
             res = setInputScope(hwnd, (InputScope)PA_GetLongParameter(params, 1));//set new input scope
-
         }
     }
     

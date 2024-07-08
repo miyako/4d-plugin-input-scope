@@ -1,4 +1,4 @@
-﻿{
+{
 	"Sources/Methods/generate_project_xcode.4dm": {
 		"startSelection": 0,
 		"endSelection": 0,
@@ -171,13 +171,13 @@
 		"stamp": "2019-07-02T23:15:40.975Z"
 	},
 	"Sources/Methods/TEST.4dm": {
-		"startSelection": 0,
-		"endSelection": 0,
-		"firstSelectedLine": 40,
-		"lastSelectedLine": 40,
+		"startSelection": 14,
+		"endSelection": 14,
+		"firstSelectedLine": 1,
+		"lastSelectedLine": 1,
 		"folding": [],
 		"bookmarks": [],
-		"stamp": "2019-07-07T00:11:38.643Z"
+		"stamp": "2024-07-08T00:40:19.671Z"
 	},
 	"Sources/Methods/TEST_v17.4dm": {
 		"startSelection": 0,
@@ -225,12 +225,21 @@
 		"stamp": "2019-07-24T09:10:02.187Z"
 	},
 	"Sources/Forms/TEST/ObjectMethods/ボタン4.4dm": {
-		"startSelection": 51,
-		"endSelection": 26,
+		"startSelection": 0,
+		"endSelection": 0,
 		"firstSelectedLine": 0,
 		"lastSelectedLine": 0,
 		"folding": [],
 		"bookmarks": [],
-		"stamp": "2019-07-24T09:10:25.829Z"
+		"stamp": "2024-07-07T03:04:10.392Z"
+	},
+	"Sources/Forms/TEST/method.4dm": {
+		"startSelection": 0,
+		"endSelection": 0,
+		"firstSelectedLine": 0,
+		"lastSelectedLine": 0,
+		"folding": [],
+		"bookmarks": [],
+		"stamp": "2024-07-08T00:36:14.822Z"
 	}
 }

@@ -1,4 +1,4 @@
-﻿{
+{
 	"$4d": {
 		"version": "1",
 		"kind": "form"
@@ -36,7 +36,7 @@
 		},
 		{
 			"objects": {
-				"": {
+				"Variable1": {
 					"type": "input",
 					"left": 164,
 					"top": 257,
@@ -110,5 +110,6 @@
 				}
 			}
 		}
-	]
+	],
+	"method": "method.4dm"
 }
