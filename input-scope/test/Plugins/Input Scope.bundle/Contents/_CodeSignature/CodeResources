@@ -8,7 +8,7 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			PF4yx0qQ96A2kYijODHo7tzAg6s=
+			1H9pq6EjwUMk9dgzDXyjXqH4UYc=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -39,11 +39,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			PF4yx0qQ96A2kYijODHo7tzAg6s=
+			1H9pq6EjwUMk9dgzDXyjXqH4UYc=
 			</data>
 			<key>hash2</key>
 			<data>
-			iBdBzUFI20fKzss+/QsfKGgZz65DIUUGDUJm17JRfGM=
+			0JN8G9AWFE6Ns0qGpm14/79UPoNBCiv58QYbZ27D6uM=
 			</data>
 			<key>optional</key>
 			<true/>
@@ -74,11 +74,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			yZ8DlfFqKeseoL/MUFBeyOeRu5I=
+			2aMDAOKIcb3jGxXdFj8w+iaMruo=
 			</data>
 			<key>hash2</key>
 			<data>
-			XDfo1HkKOivHUqsJ2SlOV9erPYixf9RNFINC/kk6K/U=
+			u+mDbkl3EU50lkHp9olx77GRwULwW9L5aXYshoq5GMI=
 			</data>
 		</dict>
 		<key>Windows64/Input Scope.exp</key>
@@ -103,15 +103,48 @@
 			uwO1kyr8+4RLrhUO9w4garX7jhpqsoX5uIJEeEMiU/Q=
 			</data>
 		</dict>
+		<key>Windows64/Input Scope.pdb</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			phWdpQNdkJDS8ec5WEcHLof6yNI=
+			</data>
+			<key>hash2</key>
+			<data>
+			Xbt+5w1ZMqKMdnfck7g19A3giI9SJgOApDPZd6A7LZ4=
+			</data>
+		</dict>
 		<key>windows/Input Scope.4DX</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			2yMV1dycOMA9V28CY/bxVscHYP8=
+			taF349KyPunDtcVEOh4/JqYQlbA=
 			</data>
 			<key>hash2</key>
 			<data>
-			YpbCgg07GfR7eSCDilUIBaBKVUEnsnofUtZUQeWRdA8=
+			f37aWRK2PImQmxgdOCt167gS9p3v8LNgN/D5au941jE=
+			</data>
+		</dict>
+		<key>windows/Input Scope.exp</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			jIB3Ibdf6HSv3hGX6oA7r6DxgFA=
+			</data>
+			<key>hash2</key>
+			<data>
+			ChXScX4j+lkFGiANYPiFhGN/X08GWxbKKMJ9R27CiRU=
+			</data>
+		</dict>
+		<key>windows/Input Scope.lib</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Fl1VeGLU9dgAHfPCTEkJiZli/84=
+			</data>
+			<key>hash2</key>
+			<data>
+			M3IETJXnqu8rtv43FYWYZso+ScsNI3jp3Fv+Cajvueo=
 			</data>
 		</dict>
 	</dict>
