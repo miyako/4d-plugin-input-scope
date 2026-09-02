@@ -1,3 +1,6 @@
 input-scope/build/*
 input-scope/.vs/*
 input-scope/Objs/*
+build/*
+test/userPreferences.*
+test/Project/DerivedData/*
