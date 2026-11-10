@@ -9,3 +9,10 @@
 ### Syntax
 
 [miyako.github.io](https://miyako.github.io/2019/07/25/4d-plugin-input-scope.html)
+
+### Manual workflows
+
+**Bump version** updates source versions on the selected branch; **Build** is a
+separate manual action with no custom inputs. The existing `v2.0.3` is occupied,
+so run Bump separately before building a new release. See the
+[workflow and recovery guide](.github/README.md).
