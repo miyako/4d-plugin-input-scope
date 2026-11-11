@@ -66,7 +66,8 @@ class GitHub:
             command += ["--input", "-"]
             data = json.dumps(payload)
         try:
-            result = subprocess.run(command, input=data, text=True, capture_output=True, check=False)
+            result = subprocess.run(command, input=data, text=True, encoding="utf-8",
+                                    capture_output=True, check=False)
             require(result.returncode == 0,
                     f"{method} {endpoint}: gh failed: {result.stderr.strip()}")
             return json.loads(result.stdout, object_pairs_hook=json_object,
