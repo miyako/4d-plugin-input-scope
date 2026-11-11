@@ -5,7 +5,7 @@
  #	Project : Input Scope
  #	author : miyako
  #	2019/07/24
- #  
+ #
  # --------------------------------------------------------------------------------*/
 
 #include "4DPlugin-Input-Scope.h"
@@ -13,49 +13,138 @@
 #pragma mark -
 
 #if VERSIONWIN
-#include "windows.h"
-#include "inputscope.h"
-#include <Imm.h>
+#include <windows.h>
+#include <inputscope.h> /* InputScope enum and SetInputScope (exported by msctf.dll, no import library) */
+#include <imm.h>
 #pragma comment(lib, "imm32.lib")
-decltype(SetInputScope)*setInputScope = NULL;
-HMODULE hMSCTF = NULL;
+
+typedef HRESULT (WINAPI *SetInputScopeProc)(HWND, InputScope);
+
+static HMODULE hMSCTF = NULL;
+static SetInputScopeProc setInputScope = NULL;
+
+static void loadMSCTF(void) {
+
+    if(hMSCTF) return;
+
+    /* system32 only: never pick up a msctf.dll from the current or application directory */
+    hMSCTF = LoadLibraryExW(L"msctf.dll", NULL, LOAD_LIBRARY_SEARCH_SYSTEM32);
+    if(hMSCTF) {
+        setInputScope = (SetInputScopeProc)GetProcAddress(hMSCTF, "SetInputScope");
+    }
+}
+
+static void unloadMSCTF(void) {
+
+    setInputScope = NULL;
+    if(hMSCTF) {
+        FreeLibrary(hMSCTF);
+        hMSCTF = NULL;
+    }
+}
+
+static void cancelComposition(HWND hwnd) {
+
+    HIMC himc = ImmGetContext(hwnd);
+    if(himc) {
+        ImmNotifyIME(himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);
+        ImmReleaseContext(hwnd, himc);
+    }
+}
+
+static bool isJapaneseKeyboardLayout(void) {
+
+    HKL hkl = GetKeyboardLayout(0);
+    return PRIMARYLANGID(LOWORD((ULONG_PTR)hkl)) == LANG_JAPANESE;
+}
+
+/*
+ For the Japanese input scopes, switch the IME mode directly with IMM32.
+ SetInputScope is only a hint that the IME reads when focus enters the window,
+ so it does not change the mode of an IME that is already active.
+ Returns S_FALSE if the scope has no Japanese IME mode (nothing was changed).
+ */
+static HRESULT applyJapaneseConversionMode(HWND hwnd, InputScope scope) {
+
+    BOOL open = TRUE;
+    DWORD mode = 0;
+
+    switch(scope) {
+        case IS_HIRAGANA:
+            mode = IME_CMODE_NATIVE | IME_CMODE_FULLSHAPE;
+            break;
+        case IS_KATAKANA_FULLWIDTH:
+            mode = IME_CMODE_NATIVE | IME_CMODE_KATAKANA | IME_CMODE_FULLSHAPE;
+            break;
+        case IS_KATAKANA_HALFWIDTH:
+            mode = IME_CMODE_NATIVE | IME_CMODE_KATAKANA;
+            break;
+        case IS_ALPHANUMERIC_FULLWIDTH:
+        case IS_NUMBER_FULLWIDTH:
+            mode = IME_CMODE_FULLSHAPE;
+            break;
+        case IS_ALPHANUMERIC_HALFWIDTH:
+            open = FALSE; /* direct input */
+            break;
+        default:
+            return S_FALSE;
+    }
+
+    if(!isJapaneseKeyboardLayout()) return S_FALSE;
+
+    HIMC himc = ImmGetContext(hwnd);
+    if(!himc) return S_FALSE; /* no IME for this window */
+
+    HRESULT hr = S_OK;
+
+    if(!ImmSetOpenStatus(himc, open)) {
+        hr = E_FAIL;
+    }else if(open) {
+        DWORD conversion = 0, sentence = 0;
+        if(!ImmGetConversionStatus(himc, &conversion, &sentence)) {
+            hr = E_FAIL;
+        }else{
+            /* keep unrelated bits such as IME_CMODE_ROMAN */
+            conversion &= ~(DWORD)(IME_CMODE_NATIVE | IME_CMODE_KATAKANA | IME_CMODE_FULLSHAPE);
+            conversion |= mode;
+            if(!ImmSetConversionStatus(himc, conversion, sentence)) {
+                hr = E_FAIL;
+            }
+        }
+    }
+
+    ImmReleaseContext(hwnd, himc);
+
+    return hr;
+}
 #endif
 
 void PluginMain(PA_long32 selector, PA_PluginParameters params) {
-    
+
 	try
 	{
         switch(selector)
         {
             case kInitPlugin:
-            case kServerInitPlugin:
 #if VERSIONWIN
-                hMSCTF = LoadLibrary(TEXT("msctf.dll"));
-                setInputScope = (decltype(SetInputScope)*)GetProcAddress(hMSCTF, "SetInputScope");
+                loadMSCTF();
 #endif
             break;
-            
+
             case kDeinitPlugin:
-            case kServerDeinitPlugin:
 #if VERSIONWIN
-            if(hMSCTF)
-            {
-                FreeLibrary(hMSCTF);
-                hMSCTF = NULL;
-            }
+                unloadMSCTF();
 #endif
             break;
-            
+
 			// --- Input Scope
-            
+
 			case 1 :
                 PA_RunInMainProcess((PA_RunInMainProcessProcPtr)Set_input_scope, params);
-//                Set_input_scope(params);
 				break;
-                
+
             case 2 :
                 PA_RunInMainProcess((PA_RunInMainProcessProcPtr)Disable_input_method, params);
-//                Disable_input_method(params);
                 break;
 
         }
@@ -70,74 +159,85 @@ void PluginMain(PA_long32 selector, PA_PluginParameters params) {
 #pragma mark -
 
 /*
-PA_long32 event = PA_GetLongintVariable(PA_ExecuteCommandByID(COMMAND_FORM_EVENT, NULL, 0));
-if (event == EVENT_ON_GETTING_FOCUS) {}
-*/
-
+ Returns 0 (S_OK) on success, otherwise a negative HRESULT.
+ */
 void Set_input_scope(PA_PluginParameters params) {
-    
+
     PA_long32 res = 0;
-    
+
 #if VERSIONWIN
-    
-    if(!PA_IsProcessDying()) {
 
+    PA_long32 value = PA_GetLongParameter(params, 1);
+
+    if(PA_IsProcessDying()) {
+        res = E_ABORT;
+    }else if((value < IS_DEFAULT) || (value > IS_CHAT_WITHOUT_EMOJI)) {
+        /* IS_PHRASELIST..IS_ENUMSTRING need SetInputScopes with extra data */
+        res = E_INVALIDARG;
+    }else{
+
+        InputScope scope = (InputScope)value;
         HWND hwnd = GetFocus();
-        
-        if(hwnd) {
 
-            res = setInputScope(hwnd, (InputScope)PA_GetLongParameter(params, 1));//set new input scope
+        if(!hwnd) {
+            res = HRESULT_FROM_WIN32(ERROR_INVALID_WINDOW_HANDLE);
+        }else{
 
-            res = ImmAssociateContextEx(hwnd, NULL, 0);//disable input method for this hwnd
-			
+            cancelComposition(hwnd);
+
+            /* undo Disable input method; leave any context 4D associated alone */
             HIMC himc = ImmGetContext(hwnd);
-			if (himc) {
-				ImmNotifyIME(himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);//cancel any ongoing composition
+            if(himc) {
                 ImmReleaseContext(hwnd, himc);
-			}
-			else {
-				ImmAssociateContextEx(hwnd, NULL, IACE_DEFAULT);//enble input method
-			}
+            }else{
+                ImmAssociateContextEx(hwnd, NULL, IACE_DEFAULT);
+            }
 
-			setInputScope(hwnd, IS_DEFAULT);//forget the default input scope for this hwnd
+            HRESULT hint = setInputScope ? setInputScope(hwnd, scope) : E_NOTIMPL;
+            HRESULT mode = applyJapaneseConversionMode(hwnd, scope);
 
-            res = setInputScope(hwnd, (InputScope)PA_GetLongParameter(params, 1));//set new input scope
+            if(FAILED(mode)) {
+                res = mode;
+            }else if(mode == S_OK) {
+                res = S_OK; /* IME mode set; the hint is secondary */
+            }else{
+                res = FAILED(hint) ? hint : S_OK;
+            }
         }
     }
-    
+
 #endif
     PA_ReturnLong(params, res);
 }
 
+/*
+ Returns 1 on success, 0 on failure (unchanged from earlier versions).
+ */
 void Disable_input_method(PA_PluginParameters params)
 {
     PA_long32 res = 0;
-    
+
 #if VERSIONWIN
 
     /*
-          
      https://chromium.googlesource.com/chromium/src.git/+/8ced33be1ee63e589afff6f9229b36fe73cfd0f9/src/chrome/browser/ime_input.cc
-     
      */
-    
+
     if(!PA_IsProcessDying()) {
-                    
-            HWND hwnd = GetFocus();
-            
-            if(hwnd) {
 
-				HIMC himc = ImmGetContext(hwnd);
-				if (himc) {
-					ImmNotifyIME(himc, NI_COMPOSITIONSTR, CPS_CANCEL, 0);//cancel any ongoing composition
-					ImmReleaseContext(hwnd, himc);
-				}
+        HWND hwnd = GetFocus();
 
-				setInputScope(hwnd, IS_DEFAULT);//forget the default input scope for this hwnd
+        if(hwnd) {
 
-                res = ImmAssociateContextEx(hwnd, NULL, 0);//disable input method for this hwnd
+            cancelComposition(hwnd);
+
+            if(setInputScope) {
+                setInputScope(hwnd, IS_DEFAULT);
             }
+
+            res = ImmAssociateContextEx(hwnd, NULL, 0) ? 1 : 0;
         }
+    }
 #endif
     PA_ReturnLong(params, res);
 }
