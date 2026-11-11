@@ -61,7 +61,8 @@ elif tool == "xcodebuild":
             pathlib.Path("English.lproj/InfoPlist.strings").read_text().encode("utf-16"))
         for resource in ("manifest.json", "constants.xlf"):
             shutil.copyfile(resource, contents / "Resources" / resource)
-        db = pathlib.Path("build/XCBuildData")
+        # Real xcodebuild puts XCBuildData beside the CONFIGURATION_BUILD_DIR product.
+        db = pathlib.Path("test/Plugins/XCBuildData")
         db.mkdir(parents=True, exist_ok=True)
         for name in ("build.db", "build.db-wal", "build.db-shm"):
             (db / name).write_bytes(b"fresh-database")

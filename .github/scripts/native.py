@@ -18,7 +18,8 @@ FILES = tuple(BUNDLE / relative for relative in (
 WINDOWS_NAMES = (f"{PRODUCT}.4DX",)
 WINDOWS_BINARY = BUNDLE / f"Contents/Windows64/{PRODUCT}.4DX"
 DOWNLOADS = tuple(Path("winbuild") / name for name in WINDOWS_NAMES)
-XCODE_DATA = Path("build/XCBuildData")
+# Xcode puts XCBuildData under build/ or, with CONFIGURATION_BUILD_DIR, next to the product.
+XCODE_DATA = (Path("build/XCBuildData"), BASE / "XCBuildData")
 DIRECTORIES = (
     Path("build") / (PRODUCT + ".build"),
     Path("build/Default") / (PRODUCT + ".build"),
@@ -30,7 +31,7 @@ DIRECTORIES = (
 def generated(path):
     return (path in set(map(str, (*FILES, WINDOWS_BINARY, *DOWNLOADS)))
             or bool(re.fullmatch(
-                r"build/XCBuildData/(?:build\.db(?:-wal|-shm)?|"
+                r"(?:build|test/Plugins)/XCBuildData/(?:build\.db(?:-wal|-shm)?|"
                 r"[0-9a-f]{32}\.xcbuilddata/.+)", path))
             or any(path.startswith(str(directory) + "/")
                    for directory in DIRECTORIES))
@@ -55,7 +56,7 @@ def validate_paths(paths):
 def prepare():
     files = FILES
     directories = DIRECTORIES
-    validate_paths((*files, *directories, XCODE_DATA))
+    validate_paths((*files, *directories, *XCODE_DATA))
     for path in files:
         if path.exists() and not path.is_file():
             raise ValueError(f"Expected generated file: {path}")
@@ -76,12 +77,12 @@ def require_file(path):
 
 
 def validate_outputs():
-    validate_paths((*FILES, WINDOWS_BINARY, *DOWNLOADS, *DIRECTORIES, XCODE_DATA))
+    validate_paths((*FILES, WINDOWS_BINARY, *DOWNLOADS, *DIRECTORIES, *XCODE_DATA))
     for path in FILES:
         require_file(path)
 
 def validate_unsigned():
-    validate_paths((*FILES, *DIRECTORIES, XCODE_DATA))
+    validate_paths((*FILES, *DIRECTORIES, *XCODE_DATA))
     for path in FILES[:-1]:
         require_file(path)
 
