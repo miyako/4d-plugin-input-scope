@@ -144,7 +144,7 @@ def context(sha, *, final=False):
     version = source_version.read()
     if final:
         native.validate_paths((*native.FILES, native.WINDOWS_BINARY, *native.DOWNLOADS,
-                               *native.DIRECTORIES, native.XCODE_DATA,
+                               *native.DIRECTORIES, *native.XCODE_DATA,
                                *map(Path, asset_names(version))))
     repository.verify_checkout(sha, generated=native.generated,
                                assets=asset_names(version), final=final)
