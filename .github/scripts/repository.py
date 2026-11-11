@@ -10,8 +10,9 @@ import sys
 
 
 def run(*args, input=None, env=None):
-    return subprocess.run(args, input=input, env=env, text=True, check=True,
-                          stdout=subprocess.PIPE).stdout.rstrip("\n")
+    # Git emits paths as UTF-8; the Windows locale code page would mangle them.
+    return subprocess.run(args, input=input, env=env, text=True, encoding="utf-8",
+                          check=True, stdout=subprocess.PIPE).stdout.rstrip("\n")
 
 
 def selected_sha(sha):
